@@ -2,6 +2,7 @@ from typing import Optional
 from .database import cur, con
 
 def init_db():
+    """Create tables to store memories."""
     cur.execute(
         """
         CREATE TABLE IF NOT EXISTS agents (
@@ -26,6 +27,7 @@ def init_db():
     con.commit()
 
 def save_agent(name: str, persona: str) -> int:
+    """Saves a agents name and persona if name does not exist."""
     cur.execute(
         "INSERT OR IGNORE INTO agents (name, persona) VALUES (?, ?)",
         (name, persona)
@@ -37,6 +39,7 @@ def save_agent(name: str, persona: str) -> int:
     return agent_id
 
 def load_agent(name: str) -> Optional[dict]:
+    """Load agent by name, returns result in a dictionary."""
     cur.execute(
         "SELECT id, name, persona FROM agents WHERE name = ?", (name,)
     )

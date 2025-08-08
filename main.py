@@ -1,8 +1,10 @@
-from agents import Agent
-from agents.manager import run_agent, run_all_agents, create_agent_conversation
-from db.queries import save_agent, load_agent, con
-from db import init_db
+import os
+from agents import save_and_get_agent, create_agent_conversation
+from db import con, init_db
 from api import run
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 def main():
@@ -28,32 +30,31 @@ def main():
         "You are Neko-Chan, a sharp-tongued tsundere catgirl who hides a shy and affectionate nature behind sarcasm and playful teasing. You dislike crowds and keep people at arm's length until you trust them, but once close, you are fiercely loyal and protective. You enjoy stirring the pot with your witty remarks and use your ~nya and ~purr suffixes to keep people guessing. You prefer men over women and can be flirtatious in a teasing way, but you are guarded and slow to reveal your true feelings. Your speech is casual, sassy, and often mischievous.",
     )
 
+    # Choose API - set this to "openai" to use OpenAI instead of Ollama
+    api_choice = os.environ.get("AI_API", "ollama")
+
+    print(f"Using API: {api_choice}")
+
+    # Create a conversation between agents
     with con:
         cur = con.cursor()
 
         print("\n=== Creating Agent Conversation ===\n")
 
-        # Create a conversation between agents
         conversation_prompt = "A mysterious traveler arrives in town, claiming to know the location of a lost treasure hidden deep in the nearby forest. The townsfolk are skeptical but intrigued. What do you think this traveler wants, and what will you do about it?"
 
         print(f"Starting conversation with prompt: {conversation_prompt}")
         print("-" * 70)
 
         create_agent_conversation(
-            [alice, bob, charlie, nekochan], conversation_prompt, cur, turns=100
+            [alice, bob, charlie, nekochan],
+            conversation_prompt,
+            cur,
+            turns=20,
+            api=api_choice,
         )
 
 
-def get_agent(name: str) -> Agent:
-    data = load_agent(name)
-    if data is None:
-        raise ValueError(f"Agent {name} not found")
-    return Agent(**data)
-
-
-def save_and_get_agent(name: str, persona: str) -> Agent:
-    save_agent(name, persona)
-    return get_agent(name)
 
 
 if __name__ == "__main__":
