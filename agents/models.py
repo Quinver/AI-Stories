@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List, Tuple
+from typing import List, Tuple, Dict
 
 @dataclass
 class Agent:
@@ -13,7 +13,7 @@ class Agent:
         ordered by creation time ascending.
         """
         cursor.execute(
-            "SELECT content FROM messages WHERE agent_id = ? ORDER BY created_at ASC",
+            "SELECT content FROM messages WHERE agent_id = ? AND role = 'assistant' ORDER BY created_at ASC",
             (self.id,)
         )
         rows = cursor.fetchall()
@@ -40,6 +40,24 @@ class Agent:
             "INSERT INTO messages (agent_id, role, content) VALUES (?, ?, ?)",
             (self.id, role, content)
         )
+        if commit:
+            cursor.connection.commit()
+
+    def get_conversation_history(self, cursor, limit: int = 10) -> List[Dict[str, str]]:
+        """
+        Get formatted conversation history for this agent.
+        Returns list of message dictionaries with role and content.
+        """
+        cursor.execute(
+            "SELECT role, content FROM messages WHERE agent_id = ? ORDER BY created_at DESC LIMIT ?",
+            (self.id, limit)
+        )
+        rows = cursor.fetchall()
+        return [{"role": row[0], "content": row[1]} for row in reversed(rows)]
+
+    def clear_memory(self, cursor, commit: bool = False):
+        """Clear all messages for this agent."""
+        cursor.execute("DELETE FROM messages WHERE agent_id = ?", (self.id,))
         if commit:
             cursor.connection.commit()
 
