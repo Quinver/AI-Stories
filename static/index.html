@@ -7,18 +7,89 @@
     <link rel="stylesheet" type="text/css" href="/static/styles.css" />
   </head>
   <body>
-    <button id="settingsBtn">Settings</button>
-    <div id="settingsModal">
-      <div class="settings-content">
-        <span class="close">&times;</span>
-        <p>Some text in the modal...</p>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+      <div class="nav-content">
+        <div class="nav-left">
+          <h1 class="nav-title">AI Agent Chat</h1>
+        </div>
+        <div class="nav-right">
+          <button id="settingsBtn" class="settings-button">Settings</button>
+        </div>
+      </div>
+    </nav>
+    
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>API Settings</h2>
+          <span class="close">&times;</span>
+        </div>
+        
+        <div class="modal-body">
+          <!-- Ollama Settings -->
+          <div class="settings-section">
+            <h3>Ollama Settings</h3>
+            <div class="form-group">
+              <label for="ollamaUrl">Ollama Server URL:</label>
+              <input type="text" id="ollamaUrl" placeholder="http://localhost:11434" />
+              <small>The URL where your Ollama server is running</small>
+            </div>
+            <div class="form-group">
+              <label for="ollamaModel">Ollama Model:</label>
+              <input type="text" id="ollamaModel" placeholder="mythomax:latest" />
+              <small>The model name to use (e.g., llama2, mythomax:latest)</small>
+            </div>
+            <button type="button" id="testOllama" class="test-btn">Test Ollama Connection</button>
+          </div>
+
+          <!-- OpenAI Settings -->
+          <div class="settings-section">
+            <h3>OpenAI Settings</h3>
+            <div class="form-group">
+              <label for="openaiApiKey">OpenAI API Key:</label>
+              <input type="password" id="openaiApiKey" placeholder="sk-..." />
+              <small>Your OpenAI API key from platform.openai.com</small>
+            </div>
+            <div class="form-group">
+              <label for="openaiBaseUrl">OpenAI Base URL:</label>
+              <input type="text" id="openaiBaseUrl" placeholder="https://api.openai.com/v1" />
+              <small>Custom base URL (leave default for official OpenAI)</small>
+            </div>
+            <div class="form-group">
+              <label for="openaiModel">OpenAI Model:</label>
+              <input type="text" id="openaiModel" placeholder="gpt-4o-mini" />
+              <small>Model to use (gpt-4o-mini, gpt-4o, gpt-3.5-turbo, etc.)</small>
+            </div>
+            <button type="button" id="testOpenAI" class="test-btn">Test OpenAI Connection</button>
+          </div>
+
+          <!-- GitHub Models Settings -->
+          <div class="settings-section">
+            <h3>GitHub Models Settings</h3>
+            <div class="form-group">
+              <label for="githubToken">GitHub Personal Access Token:</label>
+              <input type="password" id="githubToken" placeholder="ghp_..." />
+              <small>Your GitHub token with Models access</small>
+            </div>
+            <div class="form-group">
+              <label for="githubModel">GitHub Model:</label>
+              <input type="text" id="githubModel" placeholder="openai/gpt-4o-mini" />
+              <small>Model to use via GitHub (openai/gpt-4o-mini, meta/llama-3-8b, etc.)</small>
+            </div>
+            <button type="button" id="testGitHub" class="test-btn">Test GitHub Connection</button>
+          </div>
+        </div>
+        
+        <div class="modal-footer">
+          <button type="button" id="resetSettings" class="reset-btn">Reset to Defaults</button>
+          <button type="button" id="saveSettings" class="save-btn">Save Settings</button>
+        </div>
       </div>
     </div>
-    <div class="container">
-      <div class="header">
-        <h1>AI Agent Chat</h1>
-      </div>
 
+    <div class="container">
       <div class="controls">
         <div class="form-group">
           <label for="prompt">Conversation Prompt:</label>
@@ -26,8 +97,7 @@
             id="prompt"
             placeholder="Enter a scenario or topic for the agents to discuss..."
           >
-A mysterious traveler arrives in town, claiming to know the location of a lost treasure hidden deep in the nearby forest. The townsfolk are skeptical but intrigued. What do you think this traveler wants, and what will you do about it?</textarea
-          >
+A mysterious traveler arrives in town, claiming to know the location of a lost treasure hidden deep in the nearby forest. The townsfolk are skeptical but intrigued. What do you think this traveler wants, and what will you do about it?</textarea>
         </div>
 
         <div class="form-group">
@@ -37,9 +107,7 @@ A mysterious traveler arrives in town, claiming to know the location of a lost t
           </div>
         </div>
 
-        <div
-          style="display: grid; grid-template-columns: 1fr 1fr 2fr; gap: 10px"
-        >
+        <div style="display: grid; grid-template-columns: 1fr 1fr 2fr; gap: 10px">
           <div class="form-group">
             <label for="turns">Number of Turns:</label>
             <select id="turns">
@@ -56,6 +124,7 @@ A mysterious traveler arrives in town, claiming to know the location of a lost t
             <select id="api">
               <option value="ollama" selected>Ollama</option>
               <option value="openai">OpenAI</option>
+              <option value="github">GitHub Models</option>
             </select>
           </div>
 

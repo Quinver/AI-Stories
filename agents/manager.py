@@ -1,16 +1,19 @@
+import json
 import os
 import re
+from typing import List, Union
+
 import ollama
 from openai import OpenAI
 from openai.types.chat import (
+    ChatCompletionAssistantMessageParam,
     ChatCompletionSystemMessageParam,
     ChatCompletionUserMessageParam,
-    ChatCompletionAssistantMessageParam,
 )
+
+from db import load_agent, save_agent
+
 from .models import Agent
-from db import save_agent, load_agent
-from typing import List, Union
-import json
 
 
 def run_agent(
@@ -21,23 +24,13 @@ def run_agent(
     # Load the agent's memory from database
     memory = agent.load_memory(cursor)
 
-    # Get info of all other personas as info in system_prompt
-    others = [a for a in all_agents if a.name != agent.name]
-    others_info = ", ".join([f"{a.name} ({a.persona})" for a in others])
-
-    system_prompt = (
-        f"You are {agent.name}, defined as: {agent.persona}. "
-        + (f"You know the others: {others_info}. " if others_info else "")
-        + (
-            "Speak only as yourself. Never speak for other characters. "
-            "Stay fully in character and never copy others' speech patterns."
-            "Avoid filler or flowery language. "
-            "Do not include the other characters' lines in your response. "
-            "Avoid em dashes — and asteriks * use simple punctuation."
-            "Be yourself, but don't cling too much to your persona"
-            "Try to make it an intresting story create new events if fitting"
-            "Use max 20 words."
-        )
+    system_prompt = f"You are {agent.name}, defined as: {agent.persona}. " + (
+        "Speak only as yourself. Never speak for other characters. "
+        "Stay fully in character and never copy others' speech patterns."
+        "Remember, do NOT use words like 'nya' or 'purr' unless you are Neko-Chan. "
+        "Do not include the other characters' lines in your response. "
+        "Avoid em dashes — and asteriks * use simple punctuation."
+        "Use max 20 words."
     )
 
     system_message: ChatCompletionSystemMessageParam = {
@@ -151,8 +144,11 @@ def save_and_get_agent(name: str, persona: str) -> Agent:
     save_agent(name, persona)
     return get_agent(name)
 
+
 def import_agents_from_json() -> List[Agent]:
     with open("agents.json", "r", encoding="utf-8") as f:
         agents_data = json.load(f)
-    agents = [save_and_get_agent(agent["name"], agent["persona"]) for agent in agents_data]
+    agents = [
+        save_and_get_agent(agent["name"], agent["persona"]) for agent in agents_data
+    ]
     return agents
