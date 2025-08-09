@@ -1,15 +1,18 @@
 import os
-from agents import import_agents_from_json
-from db import init_db
-from api import run
+
 from dotenv import load_dotenv
 
+from agents import import_agents_from_json
+from api import run
+from db import init_db
+
 load_dotenv()
+
 
 def main():
     print("Initializing database...")
     init_db()
-    
+
     print("Loading agents from JSON...")
     agents = import_agents_from_json()
     print(f"Loaded {len(agents)} agents: {[agent.name for agent in agents]}")
@@ -20,8 +23,9 @@ def main():
     print("\n🌐 Starting web server...")
     print("📱 Open your browser and go to: http://localhost:8081")
     print("🤖 Your AI agents are ready to chat!")
-    
+
     run()
+
 
 if __name__ == "__main__":
     main()

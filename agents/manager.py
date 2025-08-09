@@ -26,11 +26,9 @@ def run_agent(
 
     system_prompt = f"You are {agent.name}, defined as: {agent.persona}. " + (
         "Speak only as yourself. Never speak for other characters. "
-        "Stay fully in character and never copy others' speech patterns."
-        "Remember, do NOT use words like 'nya' or 'purr' unless you are Neko-Chan. "
         "Do not include the other characters' lines in your response. "
         "Avoid em dashes — and asteriks * use simple punctuation."
-        "Use max 20 words."
+        "Only give one reply, keep it short"
     )
 
     system_message: ChatCompletionSystemMessageParam = {
