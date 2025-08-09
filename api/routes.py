@@ -49,7 +49,7 @@ class ChatRequest(BaseModel):
 
 @router.post("/chat")
 async def chat_with_agent(request: ChatRequest, db: Connection = Depends(get_db)):
-    """Chat with a specific agent or all agents."""
+    """Chat with a specific agent."""
     cur = db.cursor()
 
     if request.api not in ["ollama", "openai"]:
@@ -57,23 +57,31 @@ async def chat_with_agent(request: ChatRequest, db: Connection = Depends(get_db)
             status_code=400, detail="API must be either 'ollama' or 'openai'"
         )
 
-    if request.agent_name:
-        agent_data = load_agent(request.agent_name)
-        if not agent_data:
-            raise HTTPException(
-                status_code=404, detail=f"Agent {request.agent_name} not found"
-            )
-
-        agent = Agent(**agent_data)
-
-        # Run in thread pool to avoid blocking
-        response = await run_in_threadpool(
-            run_agent, agent, request.prompt, cur, [], request.api
+    if not request.agent_name:
+        raise HTTPException(
+            status_code=400, detail="agent_name is required"
         )
 
-        db.commit()
+    agent_data = load_agent(request.agent_name)
+    if not agent_data:
+        raise HTTPException(
+            status_code=404, detail=f"Agent {request.agent_name} not found"
+        )
 
-        return {"agent": request.agent_name, "response": response, "api": request.api}
+    agent = Agent(**agent_data)
+
+    cur.execute("SELECT id, name, persona FROM agents")
+    all_agent_data = cur.fetchall()
+    all_agents = [Agent(id=row[0], name=row[1], persona=row[2]) for row in all_agent_data]
+
+    # Run in thread pool to avoid blocking
+    response = await run_in_threadpool(
+        run_agent, agent, request.prompt, cur, all_agents, request.api
+    )
+
+    db.commit()
+
+    return {"agent": request.agent_name, "response": response, "api": request.api}
 
 
 class ConversationRequest(BaseModel):
@@ -140,6 +148,25 @@ async def clear_agent_memory(agent_name: str, db: Connection = Depends(get_db)):
     agent.clear_memory(cur, commit=True)
 
     return {"message": f"Memory cleared for agent {agent_name}"}
+
+
+@router.post("/clear-all-memory")
+async def clear_all_agent_memory(db: Connection = Depends(get_db)):
+    """Clear all memory for all agents."""
+    cur = db.cursor()
+    
+    # Get all agents
+    cur.execute("SELECT id, name, persona FROM agents")
+    all_agent_data = cur.fetchall()
+    
+    # Clear memory for each agent
+    for agent_data in all_agent_data:
+        agent = Agent(id=agent_data[0], name=agent_data[1], persona=agent_data[2])
+        agent.clear_memory(cur)
+    
+    db.commit()
+    
+    return {"message": "Memory cleared for all agents"}
 
 
 # Health check endpoint

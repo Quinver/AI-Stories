@@ -133,8 +133,11 @@ def create_agent_conversation(
 
 
 def clean_reply(raw_reply: str) -> str:
-    """Get rid of thinking tags and it's content"""
-    return re.sub(r"<think>.*?</think>", "", raw_reply, flags=re.DOTALL).strip()
+    """Remove <think> tags and strip surrounding double quotes."""
+    cleaned = re.sub(r"<think>.*?</think>", "", raw_reply, flags=re.DOTALL).strip()
+    if cleaned.startswith('"') and cleaned.endswith('"'):
+        cleaned = cleaned[1:-1].strip()
+    return cleaned
 
 
 def get_agent(name: str) -> Agent:

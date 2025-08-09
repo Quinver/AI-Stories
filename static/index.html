@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Agent Chat</title>
+    <link rel="stylesheet" type="text/css" href="/static/styles.css" />
+  </head>
+  <body>
+    <button id="settingsBtn">Settings</button>
+    <div id="settingsModal">
+      <div class="settings-content">
+        <span class="close">&times;</span>
+        <p>Some text in the modal...</p>
+      </div>
+    </div>
+    <div class="container">
+      <div class="header">
+        <h1>AI Agent Chat</h1>
+      </div>
+
+      <div class="controls">
+        <div class="form-group">
+          <label for="prompt">Conversation Prompt:</label>
+          <textarea
+            id="prompt"
+            placeholder="Enter a scenario or topic for the agents to discuss..."
+          >
+A mysterious traveler arrives in town, claiming to know the location of a lost treasure hidden deep in the nearby forest. The townsfolk are skeptical but intrigued. What do you think this traveler wants, and what will you do about it?</textarea
+          >
+        </div>
+
+        <div class="form-group">
+          <label>Select Agents:</label>
+          <div class="agent-selector" id="agentSelector">
+            <!-- Agents will be populated here -->
+          </div>
+        </div>
+
+        <div
+          style="display: grid; grid-template-columns: 1fr 1fr 2fr; gap: 10px"
+        >
+          <div class="form-group">
+            <label for="turns">Number of Turns:</label>
+            <select id="turns">
+              <option value="3">3 turns</option>
+              <option value="5">5 turns</option>
+              <option value="10">10 turns</option>
+              <option value="15">15 turns</option>
+              <option value="20" selected>20 turns</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="api">AI API:</label>
+            <select id="api">
+              <option value="ollama" selected>Ollama</option>
+              <option value="openai">OpenAI</option>
+            </select>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 10px">
+            <div class="form-group">
+              <label>&nbsp;</label>
+              <button id="startChat">Start Conversation</button>
+            </div>
+            <div class="form-group">
+              <label>&nbsp;</label>
+              <button
+                id="clearMemory"
+                style="background: linear-gradient(135deg, #e17055, #d63031)"
+              >
+                Clear Memory
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="error" id="errorMsg"></div>
+
+      <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <p>Agents are thinking...</p>
+      </div>
+
+      <div class="chat-container" id="chatContainer">
+        <div class="status">
+          Select agents and click "Start Conversation" to begin
+        </div>
+      </div>
+    </div>
+
+    <script src="/static/app.js"></script>
+  </body>
+</html>

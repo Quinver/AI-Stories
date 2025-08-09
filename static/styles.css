@@ -1,0 +1,275 @@
+* {
+   margin: 0;
+   padding: 0;
+   box-sizing: border-box;
+}
+
+body {
+   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+   background: #3f4f6f;
+   min-height: 100vh;
+   color: #333;
+}
+
+.container {
+   max-width: 1200px;
+   margin: 0 auto;
+   padding: 20px;
+}
+
+.header {
+   text-align: center;
+   margin-bottom: 30px;
+   color: white;
+}
+
+.header h1 {
+   font-size: 2.5em;
+   margin-bottom: 10px;
+   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.controls {
+   background: rgba(255, 255, 255, 0.95);
+   padding: 20px;
+   border-radius: 15px;
+   margin-bottom: 20px;
+   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+   backdrop-filter: blur(10px);
+}
+
+.form-group {
+   margin-bottom: 15px;
+}
+
+label {
+   display: block;
+   margin-bottom: 5px;
+   font-weight: 600;
+   color: #555;
+}
+
+input,
+select,
+textarea,
+button {
+   width: 100%;
+   padding: 12px;
+   border: 2px solid #e1e5e9;
+   border-radius: 8px;
+   font-size: 16px;
+   transition: all 0.3s ease;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+   outline: none;
+   border-color: #667eea;
+   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+textarea {
+   resize: vertical;
+   min-height: 100px;
+}
+
+button {
+   background: blue;
+   color: white;
+   border: none;
+   cursor: pointer;
+   font-weight: 600;
+   text-transform: uppercase;
+   letter-spacing: 1px;
+   transition:
+      transform 0.2s ease,
+      box-shadow 0.3s ease;
+}
+
+button:hover {
+   transform: translateY(-2px);
+   box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+}
+
+button:disabled {
+   opacity: 0.6;
+   cursor: not-allowed;
+   transform: none;
+}
+
+.chat-container {
+   background: rgba(255, 255, 255, 0.95);
+   border-radius: 15px;
+   padding: 20px;
+   min-height: 400px;
+   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+   backdrop-filter: blur(10px);
+}
+
+.message {
+   margin-bottom: 20px;
+   padding: 15px;
+   border-radius: 12px;
+   animation: messageSlide 0.5s ease-out;
+   position: relative;
+   overflow: hidden;
+   background: darkgray;
+}
+
+@keyframes messageSlide {
+   from {
+      opacity: 0;
+      transform: translateY(20px);
+   }
+
+   to {
+      opacity: 1;
+      transform: translateY(0);
+   }
+}
+
+.message::before {
+   content: "";
+   position: absolute;
+   top: 0;
+   left: 0;
+   right: 0;
+   height: 3px;
+}
+
+.speaker {
+   font-weight: bold;
+   font-size: 1.1em;
+   margin-bottom: 8px;
+   text-transform: capitalize;
+}
+
+.content {
+   line-height: 1.6;
+   font-size: 16px;
+}
+
+.loading {
+   display: none;
+   text-align: center;
+   padding: 20px;
+}
+
+.spinner {
+   border: 4px solid #f3f3f3;
+   border-top: 4px solid #667eea;
+   border-radius: 50%;
+   width: 40px;
+   height: 40px;
+   animation: spin 1s linear infinite;
+   margin: 0 auto 10px;
+}
+
+@keyframes spin {
+   0% {
+      transform: rotate(0deg);
+   }
+
+   100% {
+      transform: rotate(360deg);
+   }
+}
+
+.error {
+   background: red;
+   color: white;
+   padding: 15px;
+   border-radius: 8px;
+   margin: 10px 0;
+   display: none;
+}
+
+.status {
+   text-align: center;
+   padding: 10px;
+   font-style: italic;
+   color: #666;
+}
+
+.agent-selector {
+   display: grid;
+   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+   gap: 10px;
+   margin-bottom: 15px;
+}
+
+.agent-checkbox {
+   display: flex;
+   align-items: center;
+   padding: 10px;
+   background: #f8f9fa;
+   border-radius: 8px;
+   transition: background 0.3s ease;
+}
+
+.agent-checkbox:hover {
+   background: #e9ecef;
+}
+
+.agent-checkbox input {
+   width: auto;
+   margin-right: 10px;
+}
+
+@media (max-width: 768px) {
+   .container {
+      padding: 10px;
+   }
+
+   .header h1 {
+      font-size: 2em;
+   }
+
+   .agent-selector {
+      grid-template-columns: 1fr;
+   }
+}
+
+.settingsModal {
+   display: none;
+   /* Hidden by default */
+   position: fixed;
+   /* Stay in place */
+   z-index: 1;
+   /* Sit on top */
+   left: 0;
+   top: 0;
+   width: 100%;
+   /* Full width */
+   height: 100%;
+   /* Full height */
+   overflow: auto;
+   /* Enable scroll if needed */
+   background-color: rgb(0, 0, 0);
+   /* Fallback color */
+   background-color: rgba(0, 0, 0, 0.4);
+   /* Black w/ opacity */
+}
+
+.settings-content {
+  background-color: #fefefe;
+  margin: 15% auto; /* 15% from the top and centered */
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%; /* Could be more or less, depending on screen size */
+}
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
