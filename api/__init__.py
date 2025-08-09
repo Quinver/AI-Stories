@@ -6,4 +6,10 @@ app.include_router(router)
 
 def run():
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8081)
+    uvicorn.run(
+        app,
+        host="0.0.0.0",
+        port=8081,
+        log_level="critical",
+        access_log=False
+    )

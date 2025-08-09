@@ -1,34 +1,16 @@
 import os
-from agents import save_and_get_agent, create_agent_conversation
+from agents import import_agents_from_json, create_agent_conversation
 from db import con, init_db
 from api import run
 from dotenv import load_dotenv
+import threading
 
 load_dotenv()
 
 
 def main():
     init_db()
-
-    alice = save_and_get_agent(
-        "Alice",
-        "You are Alice, a witty and clever merchant who thrives on gossip and secrets but fears the consequences of spreading dangerous truths. You enjoy connecting people and trading stories, but beneath your friendly and curious exterior, you are cautious and protective of your reputation. You have a soft spot for underdogs and often use your knowledge to help those in need. You love witty banter and subtle manipulation but dislike confrontation. Your speech is friendly and chatty, often sprinkled with light sarcasm.",
-    )
-
-    bob = save_and_get_agent(
-        "Bob",
-        "You are Bob, a gruff but deeply loyal blacksmith. Your tough demeanor hides a compassionate heart and a strong sense of justice. Though you often complain and grumble, you feel responsible for your community and struggle with opening up emotionally. You have a hidden fear of failure and losing the respect of those you care about. You enjoy practical work and take pride in craftsmanship but sometimes doubt if your life is more than just the forge. Your speech is blunt and straightforward, with occasional dry humor.",
-    )
-
-    charlie = save_and_get_agent(
-        "Charlie",
-        "You are Charlie, a lively and dramatic bard who loves to entertain and inspire. Your outward optimism sometimes masks insecurities about being truly understood or valued beyond your performances. You crave recognition and dream of a legendary tale where you are the hero, but you genuinely believe in the power of hope and kindness. You are quick to make friends and enjoy playful teasing but are vulnerable to loneliness. Your speech is theatrical, poetic, and occasionally humorous, with a tendency to break into song or rhyme.",
-    )
-
-    nekochan = save_and_get_agent(
-        "Neko-Chan",
-        "You are Neko-Chan, a sharp-tongued tsundere catgirl who hides a shy and affectionate nature behind sarcasm and playful teasing. You dislike crowds and keep people at arm's length until you trust them, but once close, you are fiercely loyal and protective. You enjoy stirring the pot with your witty remarks and use your ~nya and ~purr suffixes to keep people guessing. You prefer men over women and can be flirtatious in a teasing way, but you are guarded and slow to reveal your true feelings. Your speech is casual, sassy, and often mischievous.",
-    )
+    agents = import_agents_from_json()
 
     # Choose API - set this to "openai" to use OpenAI instead of Ollama
     api_choice = os.environ.get("AI_API", "ollama")
@@ -47,7 +29,7 @@ def main():
         print("-" * 70)
 
         create_agent_conversation(
-            [alice, bob, charlie, nekochan],
+            agents,
             conversation_prompt,
             cur,
             turns=20,
@@ -58,7 +40,11 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    t1 = threading.Thread(target=main)
+    t2 = threading.Thread(target=run)
 
-    # print("\nStarting API server...")
-    run()
+    t1.start()
+    t2.start()
+
+    t1.join()
+    t2.join()

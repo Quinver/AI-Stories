@@ -10,6 +10,7 @@ from openai.types.chat import (
 from .models import Agent
 from db import save_agent, load_agent
 from typing import List, Union
+import json
 
 
 def run_agent(
@@ -29,6 +30,7 @@ def run_agent(
         + (f"You know the others: {others_info}. " if others_info else "")
         + (
             "Speak only as yourself. Never speak for other characters. "
+            "Stay fully in character and never copy others' speech patterns."
             "Avoid filler or flowery language. "
             "Do not include the other characters' lines in your response. "
             "Avoid em dashes — and asteriks * use simple punctuation."
@@ -65,7 +67,7 @@ def run_agent(
 
     try:
         if api == "ollama":
-            response = ollama.chat(model="qwen3:14b", messages=history)
+            response = ollama.chat(model="mythomax:latest", messages=history)
             content = response.get("message", {}).get("content", "")
             raw_reply = content if isinstance(content, str) else ""
         elif api == "openai":
@@ -145,3 +147,9 @@ def get_agent(name: str) -> Agent:
 def save_and_get_agent(name: str, persona: str) -> Agent:
     save_agent(name, persona)
     return get_agent(name)
+
+def import_agents_from_json() -> List[Agent]:
+    with open("agents.json", "r", encoding="utf-8") as f:
+        agents_data = json.load(f)
+    agents = [save_and_get_agent(agent["name"], agent["persona"]) for agent in agents_data]
+    return agents
